@@ -7,7 +7,7 @@
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.deleteUser = exports.updateUser = exports.getUserById = exports.getUsers = exports.createUser = void 0;
+exports.deleteUser = exports.updateUser = exports.getUserById = exports.getUsers = exports.createUser = exports.users = void 0;
 const uuid_1 = __webpack_require__(104);
 let users = [
     {
@@ -23,6 +23,7 @@ let users = [
         hobbies: ['painting', 'hiking']
     }
 ];
+exports.users = users;
 function createUser(user) {
     users.push(user);
     return user;
@@ -47,7 +48,7 @@ function updateUser(id, newData) {
 exports.updateUser = updateUser;
 function deleteUser(id) {
     const initialLength = users.length;
-    users = users.filter(user => user.id !== id);
+    exports.users = users = users.filter(user => user.id !== id);
     return users.length !== initialLength;
 }
 exports.deleteUser = deleteUser;

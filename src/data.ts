@@ -15,6 +15,7 @@ let users: User[] = [
     hobbies: ['painting', 'hiking']
   }
 ];
+export { users };
 
 export function createUser(user: User): User {
   users.push(user);
