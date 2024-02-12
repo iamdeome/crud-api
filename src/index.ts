@@ -41,7 +41,7 @@ const server = http.createServer((req, res) => {
         const userID = uuidv4();
         // Create the new user if all required fields are present
         const newUser = { ...user, id: userID }
-        data.createUser(user);
+        data.createUser(newUser);
         res.writeHead(201, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(newUser));
       } catch (error) {
@@ -78,7 +78,23 @@ const server = http.createServer((req, res) => {
         res.end('Invalid JSON');
       }
     });
-  } 
+  } // Handle PUT request for updating a specific user by ID
+  else if (pathname?.startsWith('/api/users/') && req.method === 'DELETE') {
+    const userId = pathname.split('/')[3];
+    if (!validate(userId)) {
+      res.writeHead(400, { 'Content-Type': 'text/plain' });
+      res.end('Invalid userId');
+      return;
+    }
+    const success = data.deleteUser(userId);
+    if (success) {
+      res.writeHead(204);
+      res.end();
+    } else {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('User not found');
+    }
+  }
   else {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end('Not Found.');
