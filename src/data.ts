@@ -1,14 +1,15 @@
 import { User } from './user';
+import { v4 as uuidv4 } from 'uuid';
 
 let users: User[] = [
   {
-    id: '1',
+    id: uuidv4(),
     username: 'john_doe',
     age: 30,
     hobbies: ['reading', 'swimming']
   },
   {
-    id: '2',
+    id: uuidv4(),
     username: 'jane_smith',
     age: 25,
     hobbies: ['painting', 'hiking']

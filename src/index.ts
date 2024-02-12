@@ -1,6 +1,7 @@
 import * as http from 'http';
 import * as url from 'url';
 import * as data from './data';
+import { v4 as uuidv4, validate as validate } from 'uuid';
 
 const server = http.createServer((req, res) => {
   const reqUrl = url.parse(req.url || '', true);
@@ -37,8 +38,10 @@ const server = http.createServer((req, res) => {
           res.end('Required fields missing: username, age, and hobbies');
           return;
         }
+        const userID = uuidv4();
         // Create the new user if all required fields are present
-        const newUser = data.createUser(user);
+        const newUser = { ...user, id: userID }
+        data.createUser(user);
         res.writeHead(201, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(newUser));
       } catch (error) {
@@ -46,8 +49,36 @@ const server = http.createServer((req, res) => {
         res.end('Invalid JSON');
       }
     });
+  }
+  // Handle PUT request for updating a specific user by ID
+  else if (pathname?.startsWith('/api/users/') && req.method === 'PUT') {
+    const userId = pathname.split('/')[3];
+    if (!validate(userId)) {
+      res.writeHead(400, { 'Content-Type': 'text/plain' });
+      res.end('Invalid userId');
+      return;
+    }
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        const newData = JSON.parse(body);
+        const updatedUser = data.updateUser(userId, newData);
+        if (updatedUser) {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(updatedUser));
+        } else {
+          res.writeHead(404, { 'Content-Type': 'text/plain' });
+          res.end('User not found');
+        }
+      } catch (error) {
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Invalid JSON');
+      }
+    });
   } 
-  
   else {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
     res.end('Not Found.');
